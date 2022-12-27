@@ -3,7 +3,7 @@ const app = express();
 const morgan = require('morgan');
 const cors = require("cors");
 
-const whiteList = ['https://luces-navidad-frontend.vercel.app'];
+// const whiteList = ['https://luces-navidad-frontend.vercel.app'];
 
 //settings
 app.set('port', process.env.PORT || 3000);
@@ -13,7 +13,7 @@ app.set('json spaces', 2);
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
-app.use(cors({ origin: whiteList }));
+app.use(cors());
 
 
 //routes
