@@ -3,7 +3,7 @@ const app = express();
 const morgan = require('morgan');
 const cors = require("cors");
 
-const whiteList = ['https://luces-navidad-frontend.vercel.appd/'];
+const whiteList = ['https://luces-navidad-frontend.vercel.app/'];
 
 //settings
 app.set('port', process.env.PORT || 3000);
