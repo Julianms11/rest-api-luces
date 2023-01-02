@@ -16,20 +16,10 @@ const io = new Server(server, {
 app.get("/api", (req, res) => {
   res.json(dataFromFile("ledState"));
 });
-app.get("/api/chat", (req, res) => {
-  res.json(dataFromFile("chat"));
-});
 
 // Web socket events
 io.on("connection", (socket) => {
   console.log("connected");
-  // New message
-  socket.on("message", (message) => {
-    const chat = dataFromFile("chat");
-    console.log(message);
-    changeFile("chat", [...chat, message]);
-    socket.broadcast.emit("newMessage");
-  });
   // Toggle
   socket.on("toggle", (estado) => {
     changeFile("ledState", estado);
