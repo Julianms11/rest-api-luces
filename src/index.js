@@ -1,23 +1,45 @@
-const express = require("express");
-const app = express();
-const morgan = require("morgan");
-const cors = require("cors");
+import app from "./app.js";
+import { Server } from "socket.io";
+import http from "http";
+import { dataFromFile, changeFile } from "./fileManager.js";
 
-// const whiteList = ['https://luces-navidad-frontend.vercel.app'];
+const port = process.env.PORT || 3004;
 
-//settings
-app.set("port", process.env.PORT || 3001);
-app.set("json spaces", 2);
-
-//middlewares
-app.use(morgan("dev"));
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(cors());
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
 //routes
-app.use("/api", require("./routes/index"));
+app.get("/api", (req, res) => {
+  res.json(dataFromFile("ledState"));
+});
+app.get("/api/chat", (req, res) => {
+  res.json(dataFromFile("chat"));
+});
 
-//Starting server
-app.listen(app.get("port"));
-console.log("Server on port: ", app.get("port"));
+// Web socket events
+io.on("connection", (socket) => {
+  console.log("connected");
+  // New message
+  socket.on("message", (message) => {
+    const chat = dataFromFile("chat");
+    console.log(message);
+    changeFile("chat", [...chat, message]);
+    socket.broadcast.emit("newMessage");
+  });
+  // Toggle
+  socket.on("toggle", (estado) => {
+    changeFile("ledState", estado);
+    io.emit("toggle");
+  });
+  // Disconnect
+  socket.on("disconnect", () => {
+    console.log("disconnected");
+  });
+});
+// Start server
+server.listen(port);
+console.log("Server running on port", 3004);
